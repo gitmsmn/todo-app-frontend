@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>TODOアプリ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>TODOアプリ</h1>
+    <button id="settingsButton" class="icon-button" type="button" aria-label="設定">⚙</button>
+  </header>
+
+  <main>
+    <p id="errorBanner" class="error-banner" hidden></p>
+    <p id="loadingIndicator" class="loading-indicator" hidden>読み込み中...</p>
+
+    <section class="list-section">
+      <ul id="todoList" class="todo-list"></ul>
+      <p id="emptyMessage" class="empty-message" hidden>まだTODOがありません。</p>
+    </section>
+  </main>
+
+  <button id="addButton" class="fab" type="button" aria-label="TODOを追加">+</button>
+
+  <div id="addDialog" class="dialog" hidden>
+    <div class="dialog-content">
+      <h2>TODOを追加</h2>
+      <textarea id="addTodoInput" rows="3" placeholder="大雑把なTODOを入力（例: 友人の誕生日プレゼントを揃えたい）"></textarea>
+      <p id="addError" class="error-banner" hidden></p>
+      <div class="dialog-actions">
+        <button id="addCancelButton" type="button">キャンセル</button>
+        <button id="addSubmitButton" type="button">登録</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settingsDialog" class="dialog" hidden>
+    <div class="dialog-content">
+      <h2>設定</h2>
+      <p>
+        デプロイ後に <code>terraform output -raw frontend_config</code>
+        で取得したJSONを貼り付けてください。この端末の<code>localStorage</code>にのみ保存されます。
+      </p>
+      <textarea
+        id="configInput"
+        rows="6"
+        placeholder='{"apiKey":"...","endpoints":{"createTodo":"https://...", ...}}'
+      ></textarea>
+      <p id="settingsError" class="error-banner" hidden></p>
+      <div class="dialog-actions">
+        <button id="saveConfigButton" type="button">保存</button>
+        <button id="closeSettingsButton" type="button">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

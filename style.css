@@ -1,0 +1,421 @@
+/* モバイルファースト方針（companion repoのdocs/frontend-spec.md参照）。
+   画面幅360〜430px程度を基準に、タップ領域は44px角以上を確保する。 */
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --color-bg: #f7f7f8;
+  --color-surface: #ffffff;
+  --color-border: #e0e0e0;
+  --color-text: #1a1a1a;
+  --color-muted: #6b6b6b;
+  --color-primary: #2563eb;
+  --color-badge-breakdown: #2563eb;
+  --color-badge-research: #059669;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121212;
+    --color-surface: #1e1e1e;
+    --color-border: #333333;
+    --color-text: #f0f0f0;
+    --color-muted: #a0a0a0;
+    --color-primary: #60a5fa;
+    --color-badge-breakdown: #3b82f6;
+    --color-badge-research: #10b981;
+  }
+}
+
+body {
+  margin: 0;
+  padding-bottom: 32px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+button {
+  min-height: 44px;
+  min-width: 44px;
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+button:active {
+  opacity: 0.8;
+}
+
+textarea,
+input[type="text"] {
+  width: 100%;
+  font-size: 1rem;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header h1 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.icon-button {
+  font-size: 1.2rem;
+  padding: 0;
+}
+
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 16px 96px;
+}
+
+.fab {
+  position: fixed;
+  right: 20px;
+  bottom: 24px;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+}
+
+#addSubmitButton {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.error-banner {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .error-banner {
+    background: #3f1d1d;
+    color: #fca5a5;
+    border-color: #5b2323;
+  }
+}
+
+.loading-indicator,
+.empty-message {
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.todo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.todo-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.todo-card.is-done {
+  opacity: 0.6;
+}
+
+.todo-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.type-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.type-badge.BREAKDOWN {
+  background: var(--color-badge-breakdown);
+}
+
+.type-badge.RESEARCH {
+  background: var(--color-badge-research);
+}
+
+.todo-title {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  padding: 4px 2px;
+  border-radius: 6px;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.todo-title-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.todo-progress {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.todo-meta {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-top: 4px;
+}
+
+/* ---- カスタムチェックボックス（丸・チェックマーク、文字ラベル無し） ---- */
+
+.status-toggle,
+.step-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkbox-visual {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 150ms ease, border-color 150ms ease, transform 100ms ease;
+}
+
+.checkbox-visual::after {
+  content: "";
+  width: 11px;
+  height: 7px;
+  margin-top: -2px;
+  border-left: 2.5px solid #fff;
+  border-bottom: 2.5px solid #fff;
+  transform: rotate(-45deg) scale(0);
+  transition: transform 150ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.checkbox-input:checked + .checkbox-visual {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.checkbox-input:checked + .checkbox-visual::after {
+  transform: rotate(-45deg) scale(1);
+}
+
+.checkbox-input:active + .checkbox-visual {
+  transform: scale(0.88);
+}
+
+/* ---- 詳細パネル（イージング付きの開閉アニメーション） ---- */
+
+.todo-detail-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.todo-detail-wrapper.is-open {
+  grid-template-rows: 1fr;
+}
+
+.todo-detail {
+  overflow: hidden;
+  min-height: 0;
+  border-top: 1px solid var(--color-border);
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.todo-detail-wrapper:not(.is-open) .todo-detail {
+  border-top-color: transparent;
+  margin-top: 0;
+}
+
+.detail-close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px auto 0;
+  width: 44px;
+  height: 32px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.step-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.step-checkbox {
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.step-checkbox .checkbox-visual {
+  width: 22px;
+  height: 22px;
+}
+
+.step-checkbox .checkbox-visual::after {
+  width: 9px;
+  height: 6px;
+}
+
+.step-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-title.is-done {
+  text-decoration: line-through;
+  color: var(--color-muted);
+}
+
+.step-reason {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+
+.research-content :is(h1, h2, h3, h4, h5, h6) {
+  font-size: 1rem;
+  margin: 8px 0 4px;
+}
+
+.research-content p {
+  margin: 4px 0;
+}
+
+.research-content ul {
+  margin: 4px 0;
+  padding-left: 20px;
+}
+
+.research-content hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 8px 0;
+}
+
+.editable-field {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.edit-button {
+  font-size: 0.75rem;
+  padding: 0 10px;
+  min-height: 32px;
+}
+
+.dialog {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialog[hidden] {
+  display: none;
+}
+
+.dialog-content {
+  background: var(--color-surface);
+  color: var(--color-text);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 16px 16px 0 0;
+  padding: 16px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
