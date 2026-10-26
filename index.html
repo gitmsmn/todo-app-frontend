@@ -8,7 +8,11 @@
 </head>
 <body>
   <header class="app-header">
-    <h1>TODOアプリ</h1>
+    <!-- タイトルの長押しで完了済み一覧に切り替える（意図的に目立たせない。docs/frontend-spec.md「完了済み画面」） -->
+    <div class="app-title">
+      <h1 id="appTitle">TODOアプリ</h1>
+      <span id="viewLabel" class="view-label" hidden>完了済み</span>
+    </div>
     <button id="settingsButton" class="icon-button" type="button" aria-label="設定">⚙</button>
   </header>
 
@@ -18,16 +22,50 @@
 
     <section class="list-section">
       <ul id="todoList" class="todo-list"></ul>
+      <div id="listSentinel" class="list-sentinel"></div>
       <p id="emptyMessage" class="empty-message" hidden>まだTODOがありません。</p>
     </section>
   </main>
 
   <button id="addButton" class="fab" type="button" aria-label="TODOを追加">+</button>
 
+  <div id="toast" class="toast" role="status" hidden></div>
+
   <div id="addDialog" class="dialog" hidden>
     <div class="dialog-content">
       <h2>TODOを追加</h2>
       <textarea id="addTodoInput" rows="3" placeholder="大雑把なTODOを入力（例: 友人の誕生日プレゼントを揃えたい）"></textarea>
+
+      <div class="add-options">
+        <div id="typeSegment" class="segmented" role="group" aria-label="種別">
+          <button type="button" data-value="BREAKDOWN">やること</button>
+          <button type="button" data-value="RESEARCH">調べもの</button>
+        </div>
+        <label class="switch-row">
+          <input id="aiToggle" type="checkbox" />
+          <span class="switch-visual"></span>
+          AIを使う
+        </label>
+      </div>
+
+      <div id="aiOptions" class="add-options">
+        <label id="modelRow" class="option-field">
+          モデル
+          <select id="modelSelect"></select>
+        </label>
+        <label id="breakdownOptions" class="option-field">
+          段階数
+          <input id="stepCountInput" type="number" min="1" max="10" inputmode="numeric" placeholder="おまかせ" />
+        </label>
+        <div id="researchOptions" class="option-field-group">
+          <div id="researchModeSegment" class="segmented" role="group" aria-label="調べ方">
+            <button type="button" data-value="SUMMARY">要約する</button>
+            <button type="button" data-value="PROMPT">プロンプトを作る</button>
+          </div>
+          <p id="researchModeHint" class="option-hint"></p>
+        </div>
+      </div>
+
       <p id="addError" class="error-banner" hidden></p>
       <div class="dialog-actions">
         <button id="addCancelButton" type="button">キャンセル</button>
