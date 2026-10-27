@@ -506,6 +506,16 @@ main {
   color: #fff;
 }
 
+/* .segmentedはoverflow: hiddenのため、外側に出るフォーカスリングは上下が切れて左右の縦線だけ残る。内側に描く。 */
+.segmented button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.segmented button[aria-pressed="true"]:focus-visible {
+  outline-color: #fff;
+}
+
 .switch-row {
   position: relative;
   display: inline-flex;
@@ -581,6 +591,8 @@ main {
 .option-field-group {
   display: flex;
   flex-direction: column;
+  /* 既定のstretchだと、セグメントの幅が下のヒント文の幅まで伸びる */
+  align-items: flex-start;
   gap: 4px;
 }
 
