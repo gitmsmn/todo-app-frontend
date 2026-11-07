@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>TODOアプリ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300&family=Noto+Sans+JP:wght@200;300&display=swap" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,12 +16,12 @@
       <h1 id="appTitle">TODOアプリ</h1>
       <span id="viewLabel" class="view-label" hidden>完了済み</span>
     </div>
-    <button id="settingsButton" class="icon-button" type="button" aria-label="設定">⚙</button>
+    <button id="settingsButton" class="text-button" type="button">設定</button>
   </header>
 
   <main>
     <p id="errorBanner" class="error-banner" hidden></p>
-    <p id="loadingIndicator" class="loading-indicator" hidden>読み込み中...</p>
+    <p id="loadingIndicator" class="loading-indicator" hidden>読み込み中</p>
 
     <section class="list-section">
       <ul id="todoList" class="todo-list"></ul>
@@ -50,11 +53,11 @@
 
       <div id="aiOptions" class="add-options">
         <label id="modelRow" class="option-field">
-          モデル
+          <span class="option-label">モデル</span>
           <select id="modelSelect"></select>
         </label>
         <label id="breakdownOptions" class="option-field">
-          段階数
+          <span class="option-label">段階数</span>
           <input id="stepCountInput" type="number" min="1" max="10" inputmode="numeric" placeholder="おまかせ" />
         </label>
         <div id="researchOptions" class="option-field-group">
@@ -68,8 +71,8 @@
 
       <p id="addError" class="error-banner" hidden></p>
       <div class="dialog-actions">
-        <button id="addCancelButton" type="button">キャンセル</button>
-        <button id="addSubmitButton" type="button">登録</button>
+        <button id="addCancelButton" class="text-button" type="button">キャンセル</button>
+        <button id="addSubmitButton" class="primary-button" type="button">追加する</button>
       </div>
     </div>
   </div>
@@ -88,8 +91,8 @@
       ></textarea>
       <p id="settingsError" class="error-banner" hidden></p>
       <div class="dialog-actions">
-        <button id="saveConfigButton" type="button">保存</button>
-        <button id="closeSettingsButton" type="button">閉じる</button>
+        <button id="closeSettingsButton" class="text-button" type="button">閉じる</button>
+        <button id="saveConfigButton" class="primary-button" type="button">保存する</button>
       </div>
     </div>
   </div>

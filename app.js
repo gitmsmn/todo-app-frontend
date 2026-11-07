@@ -409,7 +409,7 @@ function createTodoCardElement(todo) {
   const detail = el("div", { class: "todo-detail" });
   detail.appendChild(todo.type === "BREAKDOWN" ? buildStepList(todo) : buildResearchDetail(todo));
 
-  const closeButton = el("button", { type: "button", class: "detail-close-button icon-button", "aria-label": "閉じる", text: "⌃" });
+  const closeButton = el("button", { type: "button", class: "detail-close-button text-button", text: "閉じる" });
   closeButton.addEventListener("click", (event) => {
     event.stopPropagation();
     openDetailIds.delete(todo.id);
@@ -523,7 +523,7 @@ function startEditStepField(todo, step, field, anchorElement) {
 
   if (field === "title") {
     // ×はpointerdownで処理する（clickだと先にinputのblurで確定・再描画されてボタンが消えるため）
-    const deleteButton = el("button", { type: "button", class: "step-delete-button", "aria-label": "ステップを削除", text: "×" });
+    const deleteButton = el("button", { type: "button", class: "step-delete-button text-button", "aria-label": "ステップを削除", text: "削除" });
     deleteButton.addEventListener("pointerdown", (event) => {
       event.preventDefault();
       finished = true;
@@ -566,7 +566,7 @@ function startEditStepField(todo, step, field, anchorElement) {
 }
 
 function buildAddStepControl(todo) {
-  const addButton = el("button", { type: "button", class: "add-step-button", text: "＋ ステップを追加" });
+  const addButton = el("button", { type: "button", class: "add-step-button text-button", text: "ステップを追加する" });
   addButton.addEventListener("click", () => {
     const input = el("input", { type: "text", class: "todo-title-input", placeholder: "ステップ名" });
     addButton.replaceWith(input);
@@ -714,7 +714,7 @@ function buildResearchDetail(todo) {
 
   const sources = result.sources;
   if (sources && sources.length) {
-    const list = el("ul", { class: "step-list" });
+    const list = el("ul", { class: "research-sources" });
     for (const source of sources) {
       const link = el("a", {
         href: source.url,
@@ -727,7 +727,7 @@ function buildResearchDetail(todo) {
     container.appendChild(list);
   }
 
-  const editButton = el("button", { type: "button", class: "edit-button", text: "編集" });
+  const editButton = el("button", { type: "button", class: "edit-button text-button", text: "編集する" });
   editButton.addEventListener("click", () => startEditResearch(todo, container, content, editButton));
   container.appendChild(editButton);
 
@@ -735,7 +735,7 @@ function buildResearchDetail(todo) {
 }
 
 function buildResearchPromptBlock(prompt, open) {
-  const copyButton = el("button", { type: "button", class: "edit-button", text: "コピー" });
+  const copyButton = el("button", { type: "button", class: "edit-button text-button", text: "コピーする" });
   copyButton.addEventListener("click", (event) => {
     event.preventDefault(); // summary内のボタンなので、押しても開閉はさせない
     copyText(prompt);
@@ -760,7 +760,7 @@ async function copyText(text) {
 
 function buildSummaryEditor(todo, placeholder) {
   const textarea = el("textarea", { rows: "6", placeholder });
-  const saveButton = el("button", { type: "button", text: "保存" });
+  const saveButton = el("button", { type: "button", class: "primary-button", text: "保存する" });
   saveButton.addEventListener("click", async () => {
     if (!textarea.value.trim()) return;
     try {
@@ -780,8 +780,8 @@ function startEditResearch(todo, container, contentElement, editButton) {
   contentElement.replaceWith(textarea);
   editButton.hidden = true;
 
-  const saveButton = el("button", { type: "button", text: "保存" });
-  const cancelButton = el("button", { type: "button", text: "キャンセル" });
+  const saveButton = el("button", { type: "button", class: "primary-button", text: "保存する" });
+  const cancelButton = el("button", { type: "button", class: "text-button", text: "キャンセル" });
   const actions = el("div", { class: "dialog-actions" }, [saveButton, cancelButton]);
   container.appendChild(actions);
 
@@ -1020,7 +1020,7 @@ async function handleSubmit() {
 
   const originalLabel = addSubmitButtonEl.textContent;
   addSubmitButtonEl.disabled = true;
-  if (body.ai) addSubmitButtonEl.textContent = "生成中...";
+  if (body.ai) addSubmitButtonEl.textContent = "生成しています";
   try {
     const created = await apiCreateTodo(body);
     todos.unshift(created);
