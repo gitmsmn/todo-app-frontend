@@ -1,5 +1,11 @@
 /* モバイルファースト方針（companion repoのdocs/frontend-spec.md参照）。
-   画面幅360〜430px程度を基準に、タップ領域は44px角以上を確保する。 */
+   画面幅360〜430px程度を基準に、タップ領域は44px角以上を確保する。
+
+   見た目は「静かなデザイン」に揃える（issue #3）。
+   - 白地、線を引かない（まとまりは余白で作る。例外はキーボード操作時のフォーカス表示だけ）
+   - 書体のウェイトは200と300のみ。強調は大きさ・色の濃さ・余白で表す
+   - UIは無彩色。状態の色は彩度を落として最小限に
+   - 変化は不透明度と面の色だけで、0.3秒程度でゆっくり */
 
 * {
   box-sizing: border-box;
@@ -11,27 +17,20 @@
 }
 
 :root {
-  --color-bg: #f7f7f8;
-  --color-surface: #ffffff;
-  --color-border: #e0e0e0;
-  --color-text: #1a1a1a;
-  --color-muted: #6b6b6b;
-  --color-primary: #2563eb;
-  --color-badge-breakdown: #2563eb;
-  --color-badge-research: #059669;
-}
+  --color-bg: #ffffff;
+  --color-heading: #1f1f1f;
+  --color-text: #2b2b2b;
+  --color-muted: #666666;
+  --color-subtle: #767676;
+  --color-surface: #f4f4f2;
+  --color-surface-hover: #ececea;
+  --color-shadow: rgba(30, 30, 30, 0.11);
+  --color-error: #8a3b36;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #121212;
-    --color-surface: #1e1e1e;
-    --color-border: #333333;
-    --color-text: #f0f0f0;
-    --color-muted: #a0a0a0;
-    --color-primary: #60a5fa;
-    --color-badge-breakdown: #3b82f6;
-    --color-badge-research: #10b981;
-  }
+  --font: "Jost", "Noto Sans JP", sans-serif;
+  --gutter: clamp(24px, 6vw, 80px);
+  --content-width: 620px;
+  --ease: 300ms ease;
 }
 
 body {
@@ -39,35 +38,150 @@ body {
   padding-bottom: 32px;
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  line-height: 1.5;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
 }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+b,
+th,
+summary {
+  font-weight: 300;
+}
+
+h2 {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 200;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  color: var(--color-heading);
+}
+
+a {
+  color: var(--color-heading);
+  text-decoration: none;
+  transition: opacity var(--ease);
+}
+
+a:hover {
+  opacity: 0.72;
+}
+
+code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 13px;
+  padding: 2px 6px;
+  background: var(--color-surface);
+}
+
+/* ---- ボタン ---- */
 
 button {
   min-height: 44px;
   min-width: 44px;
-  font-size: 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  border: none;
+  border-radius: 0;
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
+  transition: background-color var(--ease), color var(--ease), opacity var(--ease);
 }
 
-button:active {
-  opacity: 0.8;
+button:hover {
+  background: var(--color-surface-hover);
 }
+
+/* 主要な操作（追加する、保存する） */
+.primary-button {
+  min-height: 56px;
+  padding: 0 32px;
+  letter-spacing: 0.12em;
+  color: var(--color-heading);
+}
+
+/* 補助的な操作は面を持たないテキストボタン */
+.text-button {
+  padding: 0 8px;
+  background: transparent;
+  color: var(--color-muted);
+}
+
+.text-button:hover {
+  background: transparent;
+  color: var(--color-heading);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ---- 入力欄 ---- */
 
 textarea,
-input[type="text"] {
+input[type="text"],
+input[type="number"],
+select {
   width: 100%;
-  font-size: 1rem;
-  padding: 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  min-height: 48px;
+  padding: 12px 14px;
+  font: inherit;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  border: none;
+  border-radius: 0;
   background: var(--color-surface);
   color: var(--color-text);
+  transition: background-color var(--ease);
 }
+
+textarea {
+  line-height: 1.9;
+  resize: vertical;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+  outline: none;
+  background: var(--color-surface-hover);
+}
+
+::placeholder {
+  color: var(--color-subtle);
+  opacity: 1;
+}
+
+/* キーボード操作時だけ細い輪郭を出す（線を使わない原則の唯一の例外） */
+:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+textarea:focus-visible,
+input[type="text"]:focus-visible,
+input[type="number"]:focus-visible,
+select:focus-visible {
+  outline: 1px solid var(--color-text);
+  outline-offset: -1px;
+}
+
+/* ---- ヘッダー ---- */
 
 .app-header {
   position: sticky;
@@ -76,20 +190,25 @@ input[type="text"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  max-width: calc(var(--content-width) + var(--gutter) * 2);
+  margin: 0 auto;
+  padding: 28px var(--gutter);
+  background: var(--color-bg);
 }
 
 .app-title {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 16px;
 }
 
 .app-header h1 {
-  font-size: 1.1rem;
   margin: 0;
+  font-size: 26px;
+  font-weight: 200;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  color: var(--color-heading);
   /* 長押しで完了済み一覧に切り替えるため、テキスト選択・コールアウトを出さない */
   user-select: none;
   -webkit-user-select: none;
@@ -97,71 +216,79 @@ input[type="text"] {
 }
 
 .view-label {
-  font-size: 0.75rem;
+  font-size: 13px;
   color: var(--color-muted);
 }
 
-.icon-button {
-  font-size: 1.2rem;
-  padding: 0;
+#settingsButton {
+  margin-right: -8px;
+  font-size: 13px;
 }
 
 main {
-  max-width: 480px;
+  max-width: calc(var(--content-width) + var(--gutter) * 2);
   margin: 0 auto;
-  padding: 16px 16px 96px;
+  padding: 24px var(--gutter) 128px;
 }
+
+/* ---- 追加ボタン（右下固定の丸は残し、ほかの要素と同じ淡い面にそろえる） ---- */
 
 .fab {
   position: fixed;
-  right: 20px;
-  bottom: 24px;
+  right: 24px;
+  bottom: 28px;
   width: 56px;
   height: 56px;
   min-width: 56px;
   min-height: 56px;
   padding: 0;
-  border: none;
   border-radius: 50%;
-  background: var(--color-primary);
-  color: #fff;
-  font-size: 1.8rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 30px;
+  font-weight: 200;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 28px var(--color-shadow);
   z-index: 50;
 }
 
-#addSubmitButton {
-  background: var(--color-primary);
-  color: #fff;
-  border-color: var(--color-primary);
+.fab:hover {
+  background: var(--color-surface-hover);
 }
+
+/* ---- 状態表示 ---- */
 
 .error-banner {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 0.9rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  .error-banner {
-    background: #3f1d1d;
-    color: #fca5a5;
-    border-color: #5b2323;
-  }
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--color-error);
 }
 
 .loading-indicator,
 .empty-message {
+  margin: 48px 0;
+  font-size: 13px;
   color: var(--color-muted);
   text-align: center;
 }
+
+.loading-indicator {
+  animation: fade-in 600ms ease both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---- 一覧 ---- */
 
 .todo-list {
   list-style: none;
@@ -169,49 +296,39 @@ main {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 40px;
 }
-
-.todo-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 12px;
-}
-
 
 .todo-card-header {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 4px 12px;
   flex-wrap: wrap;
 }
 
+/* 種別は色付きの塗りではなく、補足色の小さな文字で添える。1行目に単独で置く */
 .type-badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 999px;
-  color: #fff;
-  white-space: nowrap;
-}
-
-.type-badge.BREAKDOWN {
-  background: var(--color-badge-breakdown);
-}
-
-.type-badge.RESEARCH {
-  background: var(--color-badge-research);
+  flex-basis: 100%;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--color-muted);
+  line-height: 1.6;
 }
 
 .todo-title {
   flex: 1;
   min-width: 0;
-  font-weight: 600;
-  padding: 4px 2px;
-  border-radius: 6px;
+  padding: 8px 0;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--color-heading);
   word-break: break-word;
   cursor: pointer;
+  transition: opacity var(--ease);
+}
+
+.todo-title:hover {
+  opacity: 0.72;
 }
 
 .todo-title-input {
@@ -220,18 +337,19 @@ main {
 }
 
 .todo-progress {
-  font-size: 0.85rem;
+  padding: 10px 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
   color: var(--color-muted);
   white-space: nowrap;
 }
 
 .todo-meta {
-  font-size: 0.75rem;
+  font-size: 12px;
   color: var(--color-muted);
-  margin-top: 4px;
 }
 
-/* ---- カスタムチェックボックス（丸・チェックマーク、文字ラベル無し） ---- */
+/* ---- チェックボックス（輪郭線を使わず、面の濃さで状態を示す） ---- */
 
 .status-toggle,
 .step-checkbox {
@@ -245,6 +363,10 @@ main {
   cursor: pointer;
 }
 
+.status-toggle {
+  margin-right: -10px;
+}
+
 .checkbox-input {
   position: absolute;
   inset: 0;
@@ -254,47 +376,47 @@ main {
 }
 
 .checkbox-visual {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  border: 2px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--color-surface-hover);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 150ms ease, border-color 150ms ease, transform 100ms ease;
+  transition: background-color var(--ease);
 }
 
 .checkbox-visual::after {
   content: "";
-  width: 11px;
-  height: 7px;
+  width: 10px;
+  height: 6px;
   margin-top: -2px;
-  border-left: 2.5px solid #fff;
-  border-bottom: 2.5px solid #fff;
-  transform: rotate(-45deg) scale(0);
-  transition: transform 150ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-left: 1.5px solid var(--color-bg);
+  border-bottom: 1.5px solid var(--color-bg);
+  transform: rotate(-45deg);
+  opacity: 0;
+  transition: opacity var(--ease);
 }
 
 .checkbox-input:checked + .checkbox-visual {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--color-text);
 }
 
 .checkbox-input:checked + .checkbox-visual::after {
-  transform: rotate(-45deg) scale(1);
+  opacity: 1;
 }
 
-.checkbox-input:active + .checkbox-visual {
-  transform: scale(0.88);
+.checkbox-input:focus-visible + .checkbox-visual {
+  outline: 1px solid var(--color-text);
+  outline-offset: 3px;
 }
 
-/* ---- 詳細パネル（イージング付きの開閉アニメーション） ---- */
+/* ---- 詳細パネル（開閉は高さを0.3秒でゆっくり） ---- */
 
 .todo-detail-wrapper {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: grid-template-rows var(--ease);
 }
 
 .todo-detail-wrapper.is-open {
@@ -304,28 +426,20 @@ main {
 .todo-detail {
   overflow: hidden;
   min-height: 0;
-  border-top: 1px solid var(--color-border);
-  margin-top: 10px;
-  padding-top: 10px;
+  padding-top: 20px;
 }
 
 .todo-detail-wrapper:not(.is-open) .todo-detail {
-  border-top-color: transparent;
-  margin-top: 0;
+  padding-top: 0;
 }
 
 .detail-close-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 2px auto 0;
-  width: 44px;
-  height: 32px;
-  border-color: transparent;
-  background: transparent;
-  color: var(--color-muted);
-  font-size: 0.9rem;
+  display: block;
+  margin: 12px 0 0 auto;
+  font-size: 13px;
 }
+
+/* ---- ステップ ---- */
 
 .step-list {
   list-style: none;
@@ -333,19 +447,19 @@ main {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .step-item {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  border-radius: 8px;
+  align-items: flex-start;
+  gap: 8px;
+  margin-left: -4px;
   /* 長押しドラッグで並べ替えるため、テキスト選択・コールアウトを出さない（編集中の入力欄は除く） */
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  transition: box-shadow 150ms ease, transform 150ms ease;
+  transition: background-color var(--ease), box-shadow var(--ease);
 }
 
 .step-item input {
@@ -357,86 +471,129 @@ main {
   position: relative;
   z-index: 1;
   background: var(--color-surface);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transform: scale(1.02);
+  box-shadow: 0 12px 28px var(--color-shadow);
 }
 
 .step-edit-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .step-delete-button {
   flex-shrink: 0;
-  color: var(--color-muted);
+  font-size: 13px;
 }
 
 .add-step-button {
-  width: 100%;
-  margin-top: 8px;
-  border-style: dashed;
-  background: transparent;
-  color: var(--color-muted);
-  font-size: 0.9rem;
+  margin-top: 12px;
+  margin-left: -8px;
+  font-size: 13px;
 }
 
 .step-checkbox {
   min-width: 36px;
   min-height: 36px;
+  margin-top: 2px;
 }
 
 .step-checkbox .checkbox-visual {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .step-checkbox .checkbox-visual::after {
-  width: 9px;
-  height: 6px;
+  width: 8px;
+  height: 5px;
 }
 
 .step-body {
   flex: 1;
   min-width: 0;
+  padding: 6px 0;
 }
 
+.step-title {
+  transition: color var(--ease);
+}
+
+/* 完了は打ち消し線ではなく、補足色だけで示す */
 .step-title.is-done {
-  text-decoration: line-through;
   color: var(--color-muted);
 }
 
 .step-reason {
-  font-size: 0.8rem;
-  color: var(--color-muted);
   margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--color-muted);
+}
+
+/* ---- 調べもの ---- */
+
+.research-content {
+  line-height: 2.2;
 }
 
 .research-content :is(h1, h2, h3, h4, h5, h6) {
-  font-size: 1rem;
-  margin: 8px 0 4px;
+  margin: 32px 0 8px;
+  font-size: 17px;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  color: var(--color-heading);
+}
+
+/* 空行はレンダラーが<br>にするが、段落の間隔は余白で取るので表示しない */
+.research-content > br {
+  display: none;
+}
+
+.research-content > :first-child {
+  margin-top: 0;
 }
 
 .research-content p {
-  margin: 4px 0;
+  margin: 0 0 16px;
 }
 
 .research-content ul {
-  margin: 4px 0;
+  margin: 0 0 16px;
   padding-left: 20px;
 }
 
+.research-content strong {
+  color: var(--color-heading);
+}
+
+/* 区切り線は線ではなく余白にする */
 .research-content hr {
   border: none;
-  border-top: 1px solid var(--color-border);
-  margin: 8px 0;
+  height: 0;
+  margin: 16px 0;
+}
+
+.research-sources {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.research-sources a {
+  word-break: break-word;
+}
+
+.research-sources a::after {
+  content: " ↗";
+  color: var(--color-muted);
 }
 
 .research-prompt {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 4px 8px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .research-prompt summary {
@@ -445,9 +602,10 @@ main {
   justify-content: space-between;
   gap: 8px;
   min-height: 44px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-muted);
   cursor: pointer;
+  list-style: none;
 }
 
 /* display: flexにするとsummaryの開閉マーカーが消えるため自前で付ける */
@@ -465,11 +623,31 @@ main {
 
 .research-prompt-text {
   margin: 4px 0 8px;
+  padding: 16px;
   max-height: 16em;
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
-  font-size: 0.8rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.9;
+  background: var(--color-surface);
+}
+
+.editable-field {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.edit-button {
+  margin-top: 8px;
+  margin-left: -8px;
+  font-size: 13px;
+}
+
+.research-prompt .edit-button {
+  margin: 0 -8px 0 0;
 }
 
 /* ---- 追加ダイアログの入力オプション ---- */
@@ -477,52 +655,45 @@ main {
 .add-options {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  margin-top: 10px;
+  align-items: flex-end;
+  gap: 16px 28px;
+  margin-top: 20px;
 }
 
+/* セグメントはテキストボタンを並べ、選択中は文字色だけ濃くする */
 .segmented {
   display: inline-flex;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  overflow: hidden;
+  gap: 4px;
+  margin-left: -8px;
 }
 
 .segmented button {
-  border: none;
-  border-radius: 0;
-  padding: 0 12px;
-  font-size: 0.9rem;
-  color: var(--color-muted);
+  padding: 0 8px;
+  background: transparent;
+  color: var(--color-subtle);
 }
 
-.segmented button + button {
-  border-left: 1px solid var(--color-border);
+.segmented button:hover {
+  background: transparent;
+  color: var(--color-text);
 }
 
 .segmented button[aria-pressed="true"] {
-  background: var(--color-primary);
-  color: #fff;
+  color: var(--color-heading);
 }
 
-/* .segmentedはoverflow: hiddenのため、外側に出るフォーカスリングは上下が切れて左右の縦線だけ残る。内側に描く。 */
 .segmented button:focus-visible {
-  outline: 2px solid var(--color-primary);
   outline-offset: -2px;
-}
-
-.segmented button[aria-pressed="true"]:focus-visible {
-  outline-color: #fff;
 }
 
 .switch-row {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   min-height: 44px;
-  font-size: 0.9rem;
+  font-size: 13px;
+  color: var(--color-muted);
   cursor: pointer;
 }
 
@@ -535,10 +706,10 @@ main {
 .switch-visual {
   position: relative;
   width: 40px;
-  height: 24px;
-  border-radius: 999px;
-  background: var(--color-border);
-  transition: background-color 150ms ease;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--color-surface-hover);
+  transition: background-color var(--ease);
 }
 
 .switch-visual::after {
@@ -546,46 +717,47 @@ main {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: #fff;
-  transition: transform 150ms ease;
+  background: var(--color-bg);
+  box-shadow: 0 1px 3px var(--color-shadow);
+  transition: transform var(--ease);
 }
 
 .switch-row input:checked + .switch-visual {
-  background: var(--color-primary);
+  background: var(--color-text);
 }
 
 .switch-row input:checked + .switch-visual::after {
-  transform: translateX(16px);
+  transform: translateX(18px);
 }
 
 .switch-row input:focus-visible + .switch-visual {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  outline: 1px solid var(--color-text);
+  outline-offset: 3px;
 }
 
+/* ラベルは上に補足色で置く */
 .option-field {
   display: inline-flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 6px;
-  font-size: 0.9rem;
 }
 
-.option-field select,
-.option-field input[type="number"] {
-  min-height: 44px;
-  font-size: 1rem;
-  padding: 0 8px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-surface);
-  color: var(--color-text);
+.option-label {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.option-field select {
+  width: auto;
+  min-width: 10em;
 }
 
 .option-field input[type="number"] {
-  width: 6.5em;
+  width: 7em;
 }
 
 .option-field-group {
@@ -598,7 +770,7 @@ main {
 
 .option-hint {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 12px;
   color: var(--color-muted);
 }
 
@@ -607,54 +779,48 @@ main {
 .toast {
   position: fixed;
   left: 16px;
-  right: 88px;
-  bottom: 24px;
+  right: 96px;
+  bottom: 28px;
   z-index: 60;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   max-width: 400px;
-  padding: 6px 6px 6px 14px;
-  border-radius: 10px;
-  background: #333;
-  color: #fff;
-  font-size: 0.9rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 6px 8px 6px 20px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 13px;
+  box-shadow: 0 12px 28px var(--color-shadow);
+  animation: fade-in var(--ease) both;
 }
 
 .toast-action {
   flex-shrink: 0;
-  border: none;
+  padding: 0 12px;
   background: transparent;
-  color: #93c5fd;
-  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.toast-action:hover {
+  background: var(--color-surface-hover);
 }
 
 .list-sentinel {
   height: 1px;
 }
 
-.editable-field {
-  display: flex;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.edit-button {
-  font-size: 0.75rem;
-  padding: 0 10px;
-  min-height: 32px;
-}
+/* ---- ダイアログ ---- */
 
 .dialog {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(30, 30, 30, 0.16);
   display: flex;
   align-items: flex-end;
   justify-content: center;
   z-index: 100;
+  animation: fade-in var(--ease) both;
 }
 
 .dialog[hidden] {
@@ -662,19 +828,52 @@ main {
 }
 
 .dialog-content {
-  background: var(--color-surface);
-  color: var(--color-text);
   width: 100%;
-  max-width: 480px;
-  border-radius: 16px 16px 0 0;
-  padding: 16px;
+  max-width: 620px;
   max-height: 90vh;
   overflow-y: auto;
+  padding: 36px var(--gutter) 28px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: 0 -12px 44px var(--color-shadow);
+}
+
+.dialog-content p {
+  font-size: 13px;
+  line-height: 2;
+  color: var(--color-muted);
+}
+
+.dialog-content .error-banner {
+  margin: 16px 0 0;
+  color: var(--color-error);
 }
 
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+/* カード内の保存・キャンセルは控えめに */
+.todo-detail .dialog-actions {
   margin-top: 12px;
+}
+
+.todo-detail .primary-button {
+  min-height: 44px;
+  padding: 0 20px;
+}
+
+/* ---- 動きを減らす設定 ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

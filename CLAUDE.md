@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Frontend for 「大雑把なTODOをAIが分解・調査するTODOアプリ」(a TODO app where AI breaks down or researches vague tasks). This repo is **public** and contains only static files (`index.html`, `style.css`, `app.js`) — no build step, no framework, no dependencies.
+Frontend for 「大雑把なTODOをAIが分解・調査するTODOアプリ」(a TODO app where AI breaks down or researches vague tasks). This repo is **public** and contains only static files (`index.html`, `style.css`, `app.js`) — no build step, no framework, no JS dependencies. The only external resource is the Google Fonts stylesheet (Jost / Noto Sans JP) linked from `index.html`.
 
 It is deployed via GitHub Pages directly from `main` (root). There is no CI (no GitHub Actions) because there is nothing to build.
 
@@ -12,7 +12,7 @@ The backend (Lambda + DynamoDB + Terraform) and detailed specs (architecture, da
 
 ## Critical constraint: no secrets in this repo
 
-This repo is public. The API key and the per-function Lambda Function URLs must never be committed here. They are pasted by the user into the in-page settings dialog (⚙) on first use and stored only in `localStorage` (key `todo-app:config`), read fresh from `terraform output -raw frontend_config` in the backend repo. Never add hardcoded endpoints, keys, or `.env`-style config files to this repo.
+This repo is public. The API key and the per-function Lambda Function URLs must never be committed here. They are pasted by the user into the in-page settings dialog (「設定」 in the header) on first use and stored only in `localStorage` (key `todo-app:config`), read fresh from `terraform output -raw frontend_config` in the backend repo. Never add hardcoded endpoints, keys, or `.env`-style config files to this repo.
 
 ## Running / testing
 
@@ -30,9 +30,10 @@ Single-page, vanilla JS, no modules/bundler — `app.js` is one file loaded via 
 - **Inline editing** (title, step title/reason, research summary) follows one pattern throughout: replace the display element with an `<input>`/`<textarea>`, commit the PATCH on blur/Enter, then call `renderList()` regardless of success or failure (errors surface via `showError` and the list still re-renders from current in-memory state).
 - **Markdown rendering** (`renderMarkdownToHtml`/`inlineMarkdown`/`escapeHtml`) is a small hand-rolled subset (headings, `-`/`*` lists, `---` hr, `**bold**`/`*italic*`) used only to display AI-generated research summaries. `escapeHtml` runs first and unconditionally — there is no raw-HTML injection path; keep it that way if extending the renderer.
 - **Two list views** keyed off `location.hash`: the normal view (`GET /todos?status=TODO`) and a deliberately hidden completed view (`#done`, `status=DONE`), toggled by long-pressing the header title (`toggleView`). There is intentionally no visible tab/button for the completed view. Lists load in batches via `loadTodoBatch` + an `IntersectionObserver` sentinel because the backend filters after `Limit`, so pages can be short or empty while `nextCursor` is non-null.
-- **Steps add/delete/reorder** all go through `replaceSteps` → `PATCH /todos/{id}` with the whole `steps` array (new steps have no `id`; the server assigns one). Single-step edits / done toggles still use `apiUpdateStep`. Reordering is long-press + drag (`attachLongPress`, `startStepDrag`/`handleStepDragMove`/`finishStepDrag`) with no buttons or handles by design; `touchmove` is `preventDefault`ed only while a drag is active, and the click that follows a long-press is swallowed (`suppressNextClick`). The step-delete × acts on `pointerdown` because a `click` would arrive after the input's blur has already re-rendered the row.
+- **Steps add/delete/reorder** all go through `replaceSteps` → `PATCH /todos/{id}` with the whole `steps` array (new steps have no `id`; the server assigns one). Single-step edits / done toggles still use `apiUpdateStep`. Reordering is long-press + drag (`attachLongPress`, `startStepDrag`/`handleStepDragMove`/`finishStepDrag`) with no buttons or handles by design; `touchmove` is `preventDefault`ed only while a drag is active, and the click that follows a long-press is swallowed (`suppressNextClick`). The step-delete button (「削除」) acts on `pointerdown` because a `click` would arrive after the input's blur has already re-rendered the row.
 - **Undo toasts** (`showToast`) replace confirm dialogs for completing a todo and deleting a step.
 - **Add dialog options** (type, AI on/off, model, step count, research mode) build the `POST /todos` body in `buildCreateRequest`. Model choices come from `config.models`/`config.defaultModel` in the pasted `frontend_config`; older configs without `models` simply omit `ai.model`. The last selections are kept in `localStorage` under `todo-app:inputPrefs`.
+- **Visual design** follows the "quiet design" policy (issue #3): white background only (no dark mode), no borders/rules/dividers (grouping by whitespace; the sole exception is a thin `:focus-visible` outline), font weights 200/300 only, achromatic UI (tokens on `:root` in `style.css`), slow ~0.3s opacity/surface-color transitions, and `prefers-reduced-motion` disables them. Don't reintroduce accent colors, bold text, or border lines.
 - Todo deletion (`DELETE /todos/{id}`) has no UI yet, although the backend endpoint exists.
 
 ## Current phase
